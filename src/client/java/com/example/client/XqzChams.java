@@ -15,25 +15,45 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class XqzChams {
-	private static final Map<Identifier, RenderType> CACHE = new HashMap<>();
+	// 0 = normal, 1 = derinlik sıfırlama geçişi
+	public static int phase = 0;
 
-	private static final RenderPipeline PIPELINE = RenderPipelines.register(
+	private static final Map<Identifier, RenderType> CHAMS = new HashMap<>();
+	private static final Map<Identifier, RenderType> RESET = new HashMap<>();
+
+	private static final RenderPipeline CHAMS_PIPE = RenderPipelines.register(
 		RenderPipeline.builder(RenderPipelines.ENTITY_SNIPPET)
 			.withLocation(Identifier.fromNamespaceAndPath("modid", "pipeline/xqz_chams"))
+			.withCull(true)
+			.build());
+
+	private static final RenderPipeline RESET_PIPE = RenderPipelines.register(
+		RenderPipeline.builder(RenderPipelines.ENTITY_SNIPPET)
+			.withLocation(Identifier.fromNamespaceAndPath("modid", "pipeline/xqz_reset"))
 			.withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+			.withDepthWrite(true)
+			.withColorWrite(false, false)
+			.withDepthBias(0.0f, 5.0E7f)
+			.withCull(true)
 			.build());
 
 	public static void init() {}
 
-	public static RenderType get(Identifier texture) {
-		return CACHE.computeIfAbsent(texture, t -> {
-			RenderSetup setup = RenderSetup.builder(PIPELINE)
-				.withTexture("Sampler0", t)
-				.useLightmap()
-				.useOverlay()
-				.createRenderSetup();
-			return RenderTypeInvoker.create("xqz_chams", setup);
-		});
+	private static RenderType make(RenderPipeline pipe, String name, Identifier tex) {
+		RenderSetup setup = RenderSetup.builder(pipe)
+			.withTexture("Sampler0", tex)
+			.useLightmap()
+			.useOverlay()
+			.createRenderSetup();
+		return RenderTypeInvoker.create(name, setup);
+	}
+
+	public static RenderType chams(Identifier tex) {
+		return CHAMS.computeIfAbsent(tex, t -> make(CHAMS_PIPE, "xqz_chams", t));
+	}
+
+	public static RenderType reset(Identifier tex) {
+		return RESET.computeIfAbsent(tex, t -> make(RESET_PIPE, "xqz_reset", t));
 	}
 
 	public static boolean hidden(double x, double y, double z) {
