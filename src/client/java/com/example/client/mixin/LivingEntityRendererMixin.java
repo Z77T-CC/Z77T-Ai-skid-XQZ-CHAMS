@@ -23,7 +23,7 @@ public abstract class LivingEntityRendererMixin<S extends LivingEntityRenderStat
 	public abstract Identifier getTextureLocation(S state);
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	@Inject(method = "submit", at = @At("TAIL"))
+	@Inject(method = "submit", at = @At("HEAD"))
 	private void xqzSecondPass(S state, PoseStack poseStack, SubmitNodeCollector collector,
 			CameraRenderState camera, CallbackInfo ci) {
 		if (XqzChams.active || !(state instanceof AvatarRenderState)) return;
