@@ -27,4 +27,12 @@ public abstract class LivingEntityRendererMixin<S extends LivingEntityRenderStat
 			cir.setReturnValue(XqzChams.get(this.getTextureLocation(state)));
 		}
 	}
+
+	@Inject(method = "getModelTint", at = @At("RETURN"), cancellable = true, require = 0)
+	private void xqzTint(S state, CallbackInfoReturnable<Integer> cir) {
+		if (state instanceof AvatarRenderState
+				&& XqzChams.hidden(state.x, state.y, state.z)) {
+			cir.setReturnValue(XqzChams.tint());
+		}
+	}
 }
