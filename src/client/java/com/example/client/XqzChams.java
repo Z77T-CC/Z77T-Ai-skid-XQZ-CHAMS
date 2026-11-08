@@ -19,7 +19,6 @@ public class XqzChams {
 	public static final int OPACITY = 100;
 
 	// Derinlik kaydırma. Negatif = kameraya doğru.
-	// Duvar arkasında oyuncu GÖRÜNMÜYORSA bunu +2.0E6F yap.
 	public static final float BIAS = -2.0E6F;
 
 	private static final Map<Identifier, RenderType> CACHE = new HashMap<>();
@@ -50,16 +49,19 @@ public class XqzChams {
 		});
 	}
 
+	// Oyuncunun HERHANGİ bir kısmı bir bloğun arkasındaysa true.
 	public static boolean hidden(double x, double y, double z) {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.level == null || mc.player == null) return false;
+		// Kendi karakterini atla (3. kişi görünümü)
+		if (mc.player.distanceToSqr(x, y, z) < 1.0) return false;
 		Vec3 eye = mc.player.getEyePosition();
-		for (double h : new double[] {0.2, 0.9, 1.6}) {
+		for (double h : new double[] {0.2, 0.6, 1.0, 1.4, 1.8}) {
 			Vec3 to = new Vec3(x, y + h, z);
 			ClipContext ctx = new ClipContext(eye, to,
 				ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, mc.player);
-			if (mc.level.clip(ctx).getType() == HitResult.Type.MISS) return false;
+			if (mc.level.clip(ctx).getType() != HitResult.Type.MISS) return true;
 		}
-		return true;
+		return false;
 	}
 }
