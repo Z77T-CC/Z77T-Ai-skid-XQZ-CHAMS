@@ -3,7 +3,6 @@ package com.example.client;
 import com.example.client.mixin.RenderTypeInvoker;
 import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.platform.DepthTestFunction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
@@ -17,14 +16,18 @@ import java.util.Map;
 
 public class XqzChams {
 	// Saydamlık: 0 = görünmez, 100 = tamamen opak
-	public static final int OPACITY = 60;
+	public static final int OPACITY = 100;
+
+	// Derinlik kaydırma. Negatif = kameraya doğru.
+	// Duvar arkasında oyuncu GÖRÜNMÜYORSA bunu +2.0E6F yap.
+	public static final float BIAS = -2.0E6F;
 
 	private static final Map<Identifier, RenderType> CACHE = new HashMap<>();
 
 	private static final RenderPipeline PIPELINE = RenderPipelines.register(
 		RenderPipeline.builder(RenderPipelines.ENTITY_SNIPPET)
 			.withLocation(Identifier.fromNamespaceAndPath("modid", "pipeline/xqz_chams"))
-			.withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+			.withDepthBias(0.0F, BIAS)
 			.withCull(true)
 			.withBlend(BlendFunction.TRANSLUCENT)
 			.build());
